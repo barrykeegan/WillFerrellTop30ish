@@ -1,0 +1,86 @@
+﻿@model IEnumerable<WillFerrellTop30ish.Models.Movie>
+
+<head>
+    <meta name="description" content="Browse Will Ferrell's top 30 movies">
+    <meta name="keywords" content="Will Ferrell movie details, best Will Ferrell Movies, comedy movie descriptions">
+</head>
+@{
+    ViewBag.Title = "Index";
+}
+
+<br />
+@if (Session["userType"] != null && Session["userType"].ToString() == "staff")
+{
+    <h3>@Html.ActionLink("Add a Movie", "Add")</h3>
+
+    <br />
+    <br />
+}
+
+@foreach (var movie in Model)
+{
+    <div class="singleMovieDisp">
+        <div class="singleMovieDetails">
+            <a href="~/Movies/ShowOne/@movie.ID">
+                <img class="left listPoster" alt="Movie Poster - @movie.Name"
+                     src="@movie.XmlData.Split(new string[] { "<movie_poster>"}, StringSplitOptions.None)[1].Split('<')[0]" />
+                <h2> <span class="movieListTitle">@movie.Name</span> </h2>
+                <p>
+                    <span class="movieListDesc">
+                        @movie.XmlData.Split(new string[] { "<short_description>" }, StringSplitOptions.None)[1].Split('<')[0]
+                    </span>
+                </p>
+
+            </a>
+            <form id="frmAddMovieToCart">
+                @Html.Label("lblQuantity" + movie.ID, "Quantity:")
+                @Html.TextBox("txtQuantity" + movie.ID, "1", new { @class = "textbox", type = "number" })
+
+                <input id="add_@movie.ID" type="button" onclick='addToCart("@movie.ID")' value="Add to Cart" />
+
+            </form>
+
+            <span class="price">€@movie.Price</span>
+
+            @if (movie.Stock > 0)
+            {
+                <span class="inStockStatus">
+                    In Stock
+                </span>
+            }
+            else
+            {
+                <span class="outStockStatus">
+                    Out of Stock
+                </span>
+            }
+
+        </div>
+        @if (Session["userType"] != null && Session["userType"].ToString() == "staff")
+        {
+            <div class="movieAdminOptions">
+                @using (Html.BeginForm("Delete", "Movies", new { ID = movie.ID }))
+                {
+                    <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this record?')" />
+                }
+                @using (Html.BeginForm("Edit", "Movies", new { ID = movie.ID }, FormMethod.Get))
+                {
+                    <input type="submit" value="Edit" />
+                }
+            </div>
+        }
+    </div>
+    <br />
+
+    <hr />
+}
+
+<div class="quote">
+    <img src="~/Content/imgs/semipro.jpg" alt="Jackie Moon- Semi Pro 2008" />
+    <h5>"It's just like the Titanic, but it's full of bears!!!"</h5>
+    <cite>Jackie Moon- Semi Pro 2008</cite>
+</div>
+
+
+
+

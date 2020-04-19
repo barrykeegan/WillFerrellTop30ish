@@ -1,0 +1,219 @@
+﻿@model WillFerrellTop30ish.Models.Movie
+@{
+    ViewBag.Title = "Add";
+}
+@if (Session["userType"] != null && Session["userType"].ToString() == "staff")
+{
+    <script type="text/javascript">
+        //tt0357413 -- Anchorman code
+        //tt9357413 -- Title that doesnt exist code
+        function validateAndScrapeIMDb() {
+            $("#movieDetails").html("");
+            var titleID = $("#txtIMDbMovieID").val();
+            var regExp = /tt[0-9]{7}/;
+            console.log(titleID);
+            if (titleID.length === 0) {
+                $("#spanValidationMessage").html("You have not entered any IMDb Title ID to search for.");
+            }
+            else if (!titleID.match(regExp)) {
+                $("#spanValidationMessage").html("You have not entered a valid IMDb Title ID. It must take the form 'tt0000000' where the 0s represent any numeric digit.");
+            }
+            else {
+                $("#spanValidationMessage").html("");
+                var url = "http://www.whateverorigin.org/get?url=" + encodeURIComponent("https://www.imdb.com/title/") + titleID + "&callback=?";
+                $.getJSON(url, function (pageJSON) {
+                    var sourcePageHTML = pageJSON.contents;
+                    if (sourcePageHTML.indexOf("<title>404 Error - IMDb</title>") !== -1) {
+                        $("#spanValidationMessage").html("Title not found");
+                    }
+                    else {
+                        $("#spanValidationMessage").html("");
+                        var title_wrapperStart = sourcePageHTML.indexOf('<div class="title_wrapper">');
+                        var title_wrapperEnd = sourcePageHTML.indexOf('</div>', title_wrapperStart) + 6;
+                        var title_wrapper = sourcePageHTML.slice(title_wrapperStart, title_wrapperEnd);
+                        var title_start = title_wrapper.indexOf("<h1") + 13;
+                        var title_end = title_wrapper.indexOf("&nbsp");
+                        var title = title_wrapper.slice(title_start, title_end);
+
+                        var year_start = title_wrapper.indexOf("/year/") + 6;
+                        var year = title_wrapper.slice(year_start, year_start + 4);
+
+                        var genre_start = title_wrapper.indexOf(">", title_wrapper.indexOf("genres") + 1) + 1;
+                        var genre_end = title_wrapper.indexOf("</a>", genre_start);
+                        var genre = title_wrapper.slice(genre_start, genre_end);
+
+                        var runtime_start = title_wrapper.indexOf("datetime") + 20;
+                        var runtime_end = title_wrapper.indexOf("</time>") - 1;
+                        var runtime = title_wrapper.slice(runtime_start, runtime_end).trim();
+
+                        var country_start = sourcePageHTML.indexOf(">", sourcePageHTML.indexOf("country_of_origin")) + 1;
+                        var country_end = sourcePageHTML.indexOf("</a>", country_start);
+                        var country = sourcePageHTML.slice(country_start, country_end).trim();
+
+                        var classification_start = title_wrapper.indexOf("subtext") + 10;
+                        var classification_end = title_wrapper.indexOf("<span", classification_start);
+                        var classification = title_wrapper.slice(classification_start, classification_end).trim();
+
+                        var director_start = sourcePageHTML.indexOf('"name":', sourcePageHTML.indexOf('"director":')) + 9;
+                        var director_end = sourcePageHTML.indexOf('"', director_start);
+                        var director = sourcePageHTML.slice(director_start, director_end).trim();
+
+                        var directorimdb_start = sourcePageHTML.indexOf('"url":', sourcePageHTML.indexOf('"director":')) + 8;
+                        var directorimdb_end = sourcePageHTML.indexOf('"', directorimdb_start);
+                        var directorimdb = sourcePageHTML.slice(directorimdb_start, directorimdb_end).trim();
+
+                        var actors_start = sourcePageHTML.indexOf('"actor":');
+                        var actors_end = sourcePageHTML.indexOf(']', actors_start);
+                        var actors = sourcePageHTML.slice(actors_start, actors_end + 1).trim();
+
+                        var numActors = actors.match(/{/g).length;
+
+                        var actorList = [];
+                        for (var i = 0; i < numActors; i++) {
+                            var actor_imdb_start = actors.indexOf('"url":') + 8;
+                            var actor_imdb_end = actors.indexOf('"', actor_imdb_start);
+                            var actor_imdb = actors.slice(actor_imdb_start, actor_imdb_end).trim();
+                            actorList.push(actor_imdb);
+                            var actor_name_start = actors.indexOf('"name":') + 9;
+                            var actor_name_end = actors.indexOf('"', actor_name_start);
+                            var actor_name = actors.slice(actor_name_start, actor_name_end).trim();
+                            actorList.push(actor_name);
+                            actors = actors.slice(actor_name_end);
+                        }
+                        console.log(actorList);
+                        var short_desc_start = sourcePageHTML.indexOf('"summary_text">') + 15;
+                        var short_desc_end = sourcePageHTML.indexOf('<', short_desc_start);
+                        var short_desc = sourcePageHTML.slice(short_desc_start, short_desc_end).trim();
+                        console.log(short_desc);
+                        var long_desc_start = sourcePageHTML.indexOf("<span>", sourcePageHTML.indexOf("<h2>Storyline")) + 6;
+                        var long_desc_end = sourcePageHTML.indexOf("<", long_desc_start);
+                        var long_desc = sourcePageHTML.slice(long_desc_start, long_desc_end).trim();
+                        console.log(long_desc);
+                        var poster_url_start = sourcePageHTML.indexOf("src=", sourcePageHTML.indexOf('<div class="poster">')) + 5;
+                        var poster_url_end = sourcePageHTML.indexOf('"', poster_url_start);
+                        var poster_url = sourcePageHTML.slice(poster_url_start, poster_url_end);
+                        console.log(poster_url);
+                        var output = '<p><img id="moviePoster" alt="Move Poster" src="' + poster_url + '" class="center" />';
+                        output += '<h4>' + title + ' (' + year + ')</h4>';
+                        output += '<span>' + country + ' ' + classification + ' ' + genre + ' ' + runtime + '</span><br />';
+                        output += 'Director: <a href="https://www.imdb.com' + directorimdb + '">' + director + '</a><br />';
+                        output += 'Actors: ';
+                        var j = 0;
+                        for (var i = 0; i < actorList.length / 2; i++) {
+                            output += '<a href="https://www.imdb.com' + actorList[j] + '">' + actorList[j + 1] + '</a>';
+                            j += 2;
+                            if (j < 8) {
+                                output += ', ';
+                            }
+                        }
+                        output += '<h5>Short Description</h5>';
+                        output += '<p style = >'+ short_desc +'</p>';
+                        output += '<h5>Long Description</h5>';
+                        output += '<p>'+ long_desc +'</p>';
+                        output += '</p>';
+
+                        $("#movieDetails").append(output);
+                        movieDetails.setAttribute("style", "background-color: #f2f2f2; border: solid 1px #800020; max-width: 80%; margin: auto; text-align: center; padding-left: 5px; padding-right: 5px; padding-bottom: 2px;");
+
+
+                        $("#txtMovieID").val(titleID);
+                        $("#txtMovieName").val(title);
+                        var xmlData = '<?xml version = "1.0" encoding = "utf-8"?>\n<!DOCTYPE movie SYSTEM "movie.dtd">\n<movie>\n';
+                        xmlData += '\t<title>' + title + '</title>\n';
+                        xmlData += '\t<imdb_title_id>' + titleID + '</imdb_title_id>\n';
+                        xmlData += '\t<release_date>' + year + '</release_date>\n';
+                        xmlData += '\t<genre>' + genre + '</genre>\n';
+                        xmlData += '\t<running_time>' + runtime + '</running_time>\n';
+                        xmlData += '\t<country>' + country + '</country>\n';
+                        xmlData += '\t<classification>' + classification + '</classification>\n';
+                        xmlData += '\t<director>\n\t\t<name>' + director + '</name>\n\t\t<imdbid>' + directorimdb + '</imdbid>\n\t</director>\n';
+                        j = 0;
+                        for (var i = 0; i < actorList.length / 2; i++) {
+                            xmlData += '\t<actor>\n';
+                            xmlData += '\t\t<name>' + actorList[j + 1] + '</name>\n\t\t<imdbid>' + actorList[j] + '</imdbid>\n';
+                            xmlData += "\t</actor>\n";
+                            j += 2;
+                        }
+                        xmlData += '\t<short_description>' + short_desc + '</short_description>\n';
+                        xmlData += '\t<long_description>' + long_desc + '</long_description>\n';
+                        xmlData += '\t<movie_poster>' + poster_url + '</movie_poster>\n';
+                        xmlData += '</movie>';
+                        $("#tareaMovieXML").val(xmlData);
+
+                    }
+                });
+            }
+
+        }
+    </script>
+
+    <h2>Add a Movie</h2>
+
+    <h3>@ViewBag.Message</h3>
+
+    <h3>Add by IMDb Title ID</h3>
+
+    <div class=frmIMDbMovieID>
+        <form id="frmIMDbMovieID">
+            <p>
+                @Html.Label("lblIMDbMovieID", "IMDB Title ID")
+                @Html.TextBox("txtIMDbMovieID", "", new { @class = "textbox", placeholder = "tt0000000" })
+                <span id="spanValidationMessage"></span>
+            </p>
+            <p>
+                <input id="SubmitIMDbMovieID" type="button" onclick="validateAndScrapeIMDb()" value="Get Movie Data from IMDb" />
+                <input id="ResetIMDbMovieID" type="reset" value="reset" />
+            </p>
+        </form>
+    </div>
+    <br />
+
+    <div id="movieDetails">
+
+    </div>
+    <br />
+    <hr />
+    <div id="frmSubmitToBackend">
+        <h3>Movie Details to be Submitted to Database</h3>
+        @using (Html.BeginForm("Add", "Movies", FormMethod.Post, new { id = "frmAddMovie" }))
+        {
+            <p>
+                <!--Movie ID-->
+                @Html.LabelFor(m => m.ID)
+                @Html.TextBoxFor(m => m.ID, new { id = "txtMovieID" })
+            </p>
+            <p>
+                <!--Movie Name-->
+                @Html.LabelFor(m => m.Name)
+                @Html.TextBoxFor(m => m.Name, new { id = "txtMovieName" })
+            </p>
+            <p>
+                <!--Movie XmlData-->
+                @Html.LabelFor(m => m.XmlData)
+                <br />
+                @Html.TextAreaFor(m => m.XmlData, new { id = "tareaMovieXML" })
+            </p>
+            <p>
+                <!--Price-->
+                @Html.LabelFor(m => m.Price)
+                @Html.TextBoxFor(m => m.Price, new { id = "txtMoviePrice", type = "number", step = "0.01" })
+            </p>
+            <p>
+                <!--Stock-->
+                @Html.LabelFor(m => m.Stock)
+                @Html.TextBoxFor(m => m.Stock, new { id = "txtMovieStock", type = "number" })
+            </p>
+
+            <p>
+                <input id="Submit1" type="submit" value="submit" />
+                <input id="Reset1" type="reset" value="reset" />
+            </p>
+        }
+    </div>
+}
+else
+{
+    <h2>You do not have access to this page</h2>
+}
+
+

@@ -1,0 +1,45 @@
+﻿@model WillFerrellTop30ish.Models.Staff
+@{
+    ViewBag.Title = "Login";
+}
+@if (Session == null || Session["userType"] == null || Session["userType"].ToString() != "staff")
+{
+    <h2>Login</h2>
+
+    <h3>@ViewBag.Message</h3>
+
+    <div id="divLoginForm">
+        @using (Html.BeginForm("Login", "Staff", FormMethod.Post, new { id = "frmStaffLogin" }))
+        {
+            <p>
+                <!--Staff Email-->
+                @Html.LabelFor(s => s.Email)
+                @Html.TextBoxFor(s => s.Email, new { id = "txtStaffEmail", type = "email" })
+            </p>
+            <p>
+                <!--Staff Pass-->
+                @Html.LabelFor(s => s.Password)<br />
+                @Html.TextBoxFor(s => s.Password, new { id = "txtStaffPass", type = "password" })
+            </p>
+            <br />
+
+            <input id="Submit" type="submit" value="submit" />
+            <input id="Reset" type="reset" value="reset" />
+        }
+    </div>
+}
+else
+{
+    <h2>Login</h2>
+
+    <h3>You are currently logged in as staff member with email address @Session["email"].ToString()</h3>
+}
+
+
+<br />
+<br />
+<div class="quote">
+    <img src="~/Content/imgs/will1.jpg" alt="Alex Trebek on SNL" />
+    <h5>"I said let the boy watch!"</h5>
+    <cite>Ashley Schaeffer - Eastbound & Down 2009</cite>
+</div>

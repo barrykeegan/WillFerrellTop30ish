@@ -1,0 +1,84 @@
+﻿@model IEnumerable<WillFerrellTop30ish.Models.Customer>
+@{
+    ViewBag.Title = "CustomerAdministration";
+}
+@section logged{
+    @if (Session == null || Session["userType"] == null || Session["userType"].ToString() != "staff")
+    {
+        Response.Redirect(Url.Action("Login", "Staff"));
+    }
+
+}
+
+@if (Session != null || Session["userType"] != null && Session["userType"].ToString() == "staff")
+{
+    <h2>Customer Administration</h2>
+
+
+    <h3>Customer Details</h3>
+
+    if (Model != null)
+    {
+        <div id="divCustomers">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer Details</th>
+                        <th>Date Registered</th>
+                        <th>Active Status</th>
+                        <th>Change Active Status</th>
+                        <th>Reset Password</th>
+                        <th>Delete Staff</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cust in Model)
+                    {
+                    <tr>
+                        <td>@cust.Email, @cust.Name, @cust.Phone, @cust.AddressLine1, @cust.AddressLine2, @cust.AddressLine3, @cust.Country</td>
+                        <td>@cust.DateRegistered.ToString()</td>
+                        <td>@cust.IsActive</td>
+                        <td>
+                            @if (cust.IsActive)
+                            {
+                                using (Html.BeginForm("DeactivateCustomer", "Customer", cust))
+                                {
+                                    <input type="submit" value="Deactivate Customer" onclick="return confirm('Are you sure you want to deactivate this Customer\'s account?')" />
+                                }
+                            }
+                            else
+                            {
+                                using (Html.BeginForm("ActivateCustomer", "Customer", cust))
+                                {
+                                    <input type="submit" value="Activate Customer" onclick="return confirm('Are you sure you want to activate this Customer\'s account?')" />
+                                }
+                            }
+                        </td>
+                        <td>
+                            @using (Html.BeginForm("ResetPass", "Customer", cust))
+                            {
+                                <input type="submit" value="Reset Password" onclick="return confirm('Staff members password will be reset to \'monkey\'?')" />
+                            }
+                        </td>
+                        <td>
+                            @using (Html.BeginForm("DeleteCustomer", "Customer", cust))
+                            {
+                                <input type="submit" value="Delete Customer" onclick="return confirm('Are you sure you want to delete this Customer?')" />
+                            }
+                        </td>
+                    </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <h4>No customers have signed up yet!</h4>
+    }
+
+        
+
+}
+

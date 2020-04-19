@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Will Ferrell's Top 30ish Movies</title>
+    <link rel="stylesheet" type="text/css" href="~/Content/Styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function getCookie(cName) {
+            var name = cName + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var cookieArr = decodedCookie.split(';');
+            for (var i = 0; i < cookieArr.length; i++) {
+                var c = cookieArr[i];
+                if (c.indexOf(name) !== -1) {
+                    return c.substring(c.indexOf(name)+cName.length+1)
+                }
+            }
+            return "";
+        }
+
+        function checkCookieState() {
+            var cartCookieVal = getCookie("cart");
+            if (cartCookieVal !== "") {
+                var titlesInCart = cartCookieVal.split(':');
+                var titleQty = 0;
+                for (var i = 0; i < titlesInCart.length; i++) {
+                    titleQty += parseInt(titlesInCart[i].split('_')[1]);
+                }
+                if (titleQty > 0) {
+                    $("#cartQty").html("(" + titleQty + ") - SHOPPING CART");
+                }
+
+            }
+
+
+        }
+
+        function cookieExists(cName) {
+            var cookie = getCartCookie(cName);
+            if (cookie !== "") {
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+
+        function addToCart(titleID) {
+            var qty = parseInt($("#txtQuantity" + titleID).val());
+            console.log("qty=" + qty);
+            if (qty > 0) {
+                var cookie = getCookie("cart");
+                if (cookie !== "") {
+                    var d = new Date();
+                    d.setTime(d.getTime() + (10 * 24 * 60 * 60 * 1000));//cookie lasts 10 days
+                    var expires = "; expires=" + d.toUTCString();
+                    var qty = parseInt($("#txtQuantity" + titleID).val());
+                    var itemInCart = false;
+                    var cart = "cart=";
+                    var itemsInCart = cookie.split(':');
+                    var newItemsInCart = new Array();
+                    for (var i = 0; i < itemsInCart.length; i++) {
+                        item = itemsInCart[i].split('_');
+                        if (item[0] === titleID) {
+                            itemInCart = true;
+                            item[1] = parseInt(item[1]) + qty;
+                        }
+                        newItemsInCart.push(item[0] + "_" + item[1]);
+                    }
+                    if (!itemInCart) {
+                        newItemsInCart.push(titleID + "_" + qty);
+                    }
+                    cart = cart + newItemsInCart.join(":");
+                    document.cookie = cart + expires + "; path=/";
+                }
+                else {
+                    var d = new Date();
+                    d.setTime(d.getTime() + (10 * 24 * 60 * 60 * 1000));//cookie lasts 10 days
+                    var expires = "; expires=" + d.toUTCString();
+                    document.cookie = "cart=" + titleID + "_" + qty + expires + "; path=/";
+                }
+            }
+            checkCookieState();
+        }
+
+        function updateItemInCart(titleID, qty) {
+            var cookie = getCookie("cart");
+            var itemsInCart = cookie.split(':');
+            var newItemsInCart = new Array();
+            var cart = "cart=";
+            var d = new Date();
+            d.setTime(d.getTime() + (10 * 24 * 60 * 60 * 1000));//cookie lasts 10 days
+            var expires = "; expires=" + d.toUTCString();
+            for (var i = 0; i < itemsInCart.length; i++) {
+                item = itemsInCart[i].split('_');
+                if (item[0] === titleID) {
+                    newItemsInCart.push(item[0] + "_" + qty);
+                }
+                else {
+                    newItemsInCart.push(item[0] + "_" + item[1]);
+                }
+            }
+            cart = cart + newItemsInCart.join(":");
+            document.cookie = cart + expires + "; path=/";
+        }
+
+        function removeFromCart(titleID) {
+            var cookie = getCookie("cart");
+            var itemsInCart = cookie.split(':');
+            var newItemsInCart = new Array();
+            for (var i = 0; i < itemsInCart.length; i++) {
+                item = itemsInCart[i].split('_');
+                if (item[0] !== titleID) {
+                    newItemsInCart.push(item[0] + "_" + item[1]);
+                }
+            }
+
+            if (newItemsInCart.length === 0) {
+                var d = new Date();
+                d.setTime(d.getTime() - 1);//expire cookie
+            }
+            else {
+                var d = new Date();
+                d.setTime(d.getTime() + (10 * 24 * 60 * 60 * 1000));//cookie lasts 10 days
+            }
+            var expires = "; expires=" + d.toUTCString();
+            document.cookie = "cart=" + newItemsInCart.join(':') + expires + "; path=/";
+        }
+
+        function emptyCart() {
+            var d = new Date();
+            d.setTime(d.getTime() - 1);//expire cookie
+            var expires = "; expires=" + d.toUTCString();
+            document.cookie = "cart=" + expires + "; path=/";
+        }
+    </script>
+</head>
+<body onload="checkCookieState()">
+    @RenderSection("logged", false)
+
+
+    <div class="container">
+        <img src="~/Content/imgs/burgundy-banner.png" title="ron burgundy" alt="pic of ron">
+        <div class="centered">Will Ferrell's top 30ish Movies</div>
+    </div>
+
+    <div class="navbar">
+        @Html.ActionLink("Home", "Index", "Home")
+        @Html.ActionLink("Movies", "Index", "Movies")
+        @Html.ActionLink("About Us", "Index", "About")
+        <div class="topnav-right">
+            @Html.ActionLink("Shopping Cart", "Cart", "Order", null, new { id = "cartQty" })
+            @Html.ActionLink("Account", "Index", "Customer")
+        </div>
+    </div>
+    <div id="divBreadcrumb">
+        You are here: @Html.MvcSiteMap().SiteMapPath()
+        @if (Session != null && Session["userType"] != null && Session["userType"].ToString() == "staff")
+        {
+            <span class="right">
+                @Html.ActionLink("Staff Index", "Index", "Staff") -
+                @Html.ActionLink("Logout", "Logout", "Staff")
+            </span>
+        }
+        else if (Session != null && Session["userType"] != null && Session["userType"].ToString() == "customer")
+        {
+            <span class="right">
+                @Html.ActionLink("Logout", "Logout", "Customer")
+            </span>
+        }
+
+    </div>
+
+    <br />
+    <br>
+
+
+
+    <div class="wrapper">
+
+
+
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+
+
+    <footer>
+        <div class="footer">
+            <h4> We are social - don't forget to follow us!</h4>
+            <a href="https://www.facebook.com" class="fa fa-facebook"></a>
+            <a href="https://www.twitter.com" class="fa fa-twitter"></a>
+            <a href="https://www.instagram.com" class="fa fa-instagram"></a>
+            <br />
+            &copy; @DateTime.Now.Year - Dublin Business School
+        </div>
+        <br />
+
+    </footer>
+
+</body>
+</html>

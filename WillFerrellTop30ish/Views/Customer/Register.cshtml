@@ -1,0 +1,57 @@
+﻿@model WillFerrellTop30ish.Models.Customer
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2>Register</h2>
+
+<script>
+    function verifyPasswordsMatch() {
+        console.log($("#txtPassword").val());
+        console.log($("#txtPassword2").val());
+        if ($("#txtPassword").val() !== $("#txtPassword2").val()) {
+            $("#spnNoMatchError").text("Passwords entered do not match each other.");
+            return false;
+        }
+        return true;
+    }
+</script>
+<h2>Already a member? Click here to @Html.ActionLink("Sign-In", "SignIn", "Customer")</h2>
+
+<hr />
+<br />
+<h2>OR</h2>
+
+
+<div class="form">
+    <h2>fill in your details to register now</h2>
+
+    <h3>@ViewBag.Status</h3>
+
+    @using (Html.BeginForm("Register", "Customer", FormMethod.Post, new { id = "frmRegisterCustomer", onsubmit = "return verifyPasswordsMatch()" }))
+    {
+        @Html.LabelFor(c => c.Name, "Your Name:") <span class="spnRequired" style="color: red">* Required</span>
+        <div class="textbox">@Html.TextBoxFor(c => c.Name)</div>
+        @Html.LabelFor(c => c.Email, "Email:") <span class="spnRequired" style="color: red">* Required</span>
+        <div class="textbox">  @Html.TextBoxFor(c => c.Email, new { type = "email" }) </div>
+        @Html.LabelFor(c => c.Phone, "Phone Number:")
+        <div class="textbox">  @Html.TextBoxFor(c => c.Phone)</div>
+        @Html.LabelFor(c => c.AddressLine1, "Address Line 1:") <span class="spnRequired" style="color: red">* Required</span>
+        <div class="textbox">   @Html.TextBoxFor(c => c.AddressLine1)</div>
+        @Html.LabelFor(c => c.AddressLine2, "Address Line 2:")
+        <div class="textbox">    @Html.TextBoxFor(c => c.AddressLine2)</div>
+        @Html.LabelFor(c => c.AddressLine3, "Address Line 3:")
+        <div class="textbox">   @Html.TextBoxFor(c => c.AddressLine3) </div>
+        @Html.LabelFor(c => c.AddressLine3, "Country:") <span class="spnRequired" style="color: red">* Required</span>
+        <div class="textbox">   @Html.TextBoxFor(c => c.Country) </div>
+        @Html.LabelFor(c => c.Password, "Password:") <span class="spnRequired" style="color: red">* Required</span>
+        <div class="textbox">   @Html.TextBoxFor(c => c.Password, new { type = "password", id = "txtPassword" })</div>
+        @Html.Label("Confirm Password:") <span class="spnRequired" style="color: red">* Required</span>
+        <div class="textbox">   @Html.TextBox("txtPassword2", null, new { type = "password" })</div>
+        <span id="spnNoMatchError" style="color: red"></span><br />
+        <input type="submit" value="Submit">
+        <br />
+    }
+
+
+</div>

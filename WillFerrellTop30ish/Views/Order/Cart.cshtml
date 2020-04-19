@@ -1,0 +1,96 @@
+﻿@model IEnumerable<WillFerrellTop30ish.Models.Movie>
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+<h2>Shopping Cart</h2>
+
+
+
+@if (Request.Cookies["cart"] != null)
+{
+
+
+    <div id="shoppingCart"></div>
+
+    <script>
+        function updateItem(titleID) {
+            var qty = parseInt($("#txtQuantity" + titleID).val());
+            if (qty < 0) {
+                alert("You cannot enter a quantity less than 0");
+            }
+            else if (qty === 0) {
+                removeFromCart(titleID);
+            }
+            else {
+                updateItemInCart(titleID, qty);
+            }
+            location.reload(true);
+        }
+
+        function removeItem(titleID) {
+            removeFromCart(titleID);
+            location.reload(true);
+        }
+
+
+        var cookie = getCookie("cart").split(':');
+        console.log(cookie);
+        var totalPrice = 0.0;
+        var cartContents = "";
+        for (i = 0; i < cookie.length; i++) {
+            @foreach (var movie in Model)
+            {
+                <text>
+                    if (cookie[i].split('_')[0] === "@movie.ID")
+                    {
+                        var quantity = parseInt(cookie[i].split('_')[1]);
+                        cartContents += '<div class="cartItem">';
+                        cartContents += '<img class="left cartPoster" alt="Movie Poster - @movie.Name" src="@movie.XmlData.Split(new string[] { "<movie_poster>"}, StringSplitOptions.None)[1].Split('<')[0]" />';
+                        cartContents += '<h4><a href="~/Movies/ShowOne/@movie.ID">@movie.Name</a></h4>';
+                        cartContents += 'Price: €@movie.Price <br />';
+                        cartContents += "Quantity: ";
+                        cartContents += '<input type="number" value="' + quantity + '" id="txtQuantity' + '@movie.ID"/>';
+                        cartContents += "<input id=\"btnUpdate\" type=\"button\" onclick=\"updateItem('@movie.ID')\" value=\"Update Quantity\" />"
+                        cartContents += "<input id=\"btnRemove\" type=\"button\" onclick=\"removeItem('@movie.ID')\" value=\"Remove from Cart\" />"
+                        cartContents += "<br />";
+                        cartContents += 'Item Subtotal: €' + (+(@movie.Price * quantity).toFixed(2));
+                        cartContents += '</div><hr />';
+                        var linePrice = parseFloat(cookie[i].split('_')[1]) * @movie.Price;
+                        totalPrice += linePrice;
+                    }
+                </text>
+            }
+        }
+
+        cartContents += '<h2 class="center";>Total Price: €' + totalPrice + '</h2>';
+        cartContents += '<br />'
+        cartContents += '<input id="btnEmpty" type="button" onclick="emptyCart();location.reload(true)" value="Empty Cart" />';
+        @if (Session != null && Session["userType"] != null && Session["userType"].ToString() == "customer")
+        {
+            <text>
+                cartContents += '<form id="frmSubmitOrder" action="/Order/Cart/" method="POST">';
+                cartContents += '<input id="hdnItems" name="hdnItems" type="hidden" value="' + getCookie("cart") + '" />';
+                cartContents += '<input id="btnSubmitOrder" type="Submit"  value="Submit Order" /></form>';
+            </text>
+        }
+        else
+        {
+            <text>
+                cartContents += '<a href="~/Customer/SignIn">Sign in to Place Order</a>';
+            </text>
+        }
+        $("#shoppingCart").html(cartContents);
+        shoppingCart.setAttribute("style", "background-color: #f2f2f2; border: solid 1px #800020; max-width: 80%; margin: auto; text-align: center; padding-left: 5px; padding-right: 5px; padding-bottom: 2px;");
+
+    </script>
+
+
+
+}
+else
+{
+    <h3> Your shopping cart is empty.</h3>
+}

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<mvcSiteMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://mvcsitemap.codeplex.com/schemas/MvcSiteMap-File-4.0"
+            xsi:schemaLocation="http://mvcsitemap.codeplex.com/schemas/MvcSiteMap-File-4.0 MvcSiteMapSchema.xsd">
+
+  <mvcSiteMapNode title="Home" controller="Home" action="Index">
+    <mvcSiteMapNode title="About Us" controller="About" action="Index"/>
+    <mvcSiteMapNode title="Orders" controller="Order" action="Index">
+      <mvcSiteMapNode title="Shopping Cart" controller="Order" action="Cart"/>
+      <mvcSiteMapNode title="Your Order Summary" controller="Order" action="MostRecentOrderSummary"/>
+      <mvcSiteMapNode title="Your Order History" controller="Order" action="CustomerOrders">
+        <mvcSiteMapNode title="Order Details" controller="Order" action="CustomerOrder" preservedRouteParameters="id"/>
+      </mvcSiteMapNode>
+      <mvcSiteMapNode title="Order Details" controller="Order" action="CustomerOrder" preservedRouteParameters="id"/>
+      <mvcSiteMapNode title="All Orders" controller="Order" action="AdministratorOrders">
+        <mvcSiteMapNode title="Order Details" controller="Order" action="AdministratorOrder" preservedRouteParameters="id"/>
+      </mvcSiteMapNode>
+    </mvcSiteMapNode>
+    <mvcSiteMapNode title="Customers" controller="Customer" action="Index">
+      <mvcSiteMapNode title="Sign in" controller="Customer" action="SignIn"/>
+      <mvcSiteMapNode title="Register New Account" controller="Customer" action="Register"/>
+      <mvcSiteMapNode title="Customer Administration" controller="Customer" action="CustomerAdministration"/>
+      <mvcSiteMapNode title="Change Password" controller="Customer" action="ChangePassword"/>
+    </mvcSiteMapNode>
+    <mvcSiteMapNode title="Movies" controller="Movies" action="Index">
+      <mvcSiteMapNode title="Add Movie" controller="Movies" action="Add"/>
+      <mvcSiteMapNode title="Single Movie Display" controller="Movies" action="ShowOne"  preservedRouteParameters="id"/>
+      <mvcSiteMapNode title="Edit Movie" controller="Movies" action="Edit" preservedRouteParameters="id"/>
+    </mvcSiteMapNode>
+    <mvcSiteMapNode title="Staff Index" controller="Staff" action="Index">
+      <mvcSiteMapNode title="Staff Login" controller="Staff" action="Login"/>
+      <mvcSiteMapNode title="Staff List" controller="Staff" action="List"/>
+      <mvcSiteMapNode title="Change Password" controller="Staff" action="ChangePassword"/>
+      <mvcSiteMapNode title="Add New Staff" controller="Staff" action="AddStaff"/>
+      <mvcSiteMapNode title="Delete Staff" controller="Staff" action="DeleteStaff"/>
+      <mvcSiteMapNode title="Activate Staff Account" controller="Staff" action="ActivateStaff"/>
+      <mvcSiteMapNode title="Deactivate Staff Account" controller="Staff" action="DeactivateStaff"/>
+      <mvcSiteMapNode title="Reset Staff Password" controller="Staff" action="ResetPass"/>
+    </mvcSiteMapNode>
+  </mvcSiteMapNode>
+
+</mvcSiteMap>

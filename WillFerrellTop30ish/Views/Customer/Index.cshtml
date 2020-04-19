@@ -1,0 +1,46 @@
+﻿@model WillFerrellTop30ish.Models.Customer
+<head>
+    <meta name="description" content="Sign-up to buy Will Ferrell Movies">
+    <meta name="keywords" content="buy Will Ferrell movies, comedy subscription, cheap movie deals">
+</head>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Customer Account Details</h2>
+@if (Session != null && Session["userType"] != null && Session["userType"].ToString() == "customer")
+{
+    @*Customer signed in, display customer details*@
+    <div id="divCustomerDetails">
+        <p>
+            Customer Name: @Model.Name <br />
+            Customer Address: @Model.AddressLine1, @Model.AddressLine2, @Model.AddressLine3, @Model.Country <br />
+            Email Address: @Model.Email <br />
+            Date Registered: @Model.DateRegistered.Date <br />
+            Phone Number: @Model.Phone <br />
+            @Html.ActionLink("Change Password", "ChangePassword")
+            @Html.ActionLink("View Your Orders", "CustomerOrders", "Order")
+        </p>
+        <hr />
+    </div>
+}
+else
+{
+    @*Customer not signed in, invite to register or sign in*@
+
+    <p>You're not currently signed in.</p>
+
+    <h3>Already a member? Click here to @Html.ActionLink("Sign-In", "SignIn", "Customer").</h3>
+    <h3>OR</h3>
+    <h3>Click here to @Html.ActionLink("Register", "Register", "Customer").</h3>
+}
+
+
+<br />
+<br />
+<div class="quote">
+    <img src="~/Content/imgs/anchor.jpg" alt="Alex Trebek on SNL" />
+    <h5>"Mr. Reynolds has apparently changed his name to 'Turd Ferguson'"</h5>
+    <cite>Alex Trebek - SNL 2000</cite>
+</div>

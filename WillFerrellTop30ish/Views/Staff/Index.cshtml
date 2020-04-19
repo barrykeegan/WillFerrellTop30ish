@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+@section logged{
+    @if (Session == null || Session["userType"] == null || Session["userType"].ToString() != "staff")
+    {
+        Response.Redirect(Url.Action("Login", "Staff"));
+    }
+}
+
+<h2>Staff Index</h2>
+
+<div class="form">
+    <h3>What would you like to do?</h3>
+    <ul>
+        <li>@Html.ActionLink("Work with Movies", "Index", "Movies")</li>
+        <li>@Html.ActionLink("Work with Staff", "List", "Staff")</li>
+        <li>@Html.ActionLink("Work With Customers", "CustomerAdministration", "Customer")</li>
+        <li>@Html.ActionLink("Work with Orders", "AdministratorOrders", "Order")</li>
+    </ul>
+</div>

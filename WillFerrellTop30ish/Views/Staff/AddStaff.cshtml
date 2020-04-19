@@ -1,0 +1,40 @@
+﻿@model WillFerrellTop30ish.Models.Staff
+@{
+    ViewBag.Title = "AddStaff";
+}
+@section logged{
+    @if (Session == null || Session["userType"] == null || Session["userType"].ToString() != "staff")
+    {
+        Response.Redirect(Url.Action("Login", "Staff"));
+    }
+}
+
+<script>
+    function verifyPasswordsMatch() {
+        if ($("#txtStaffPass1").val() !== $("#txtStaffPass2").val()) {
+            $("#spnNoMatchError").text("New passwords entered do not match each other.");
+            return false;
+        }
+        return true;
+    }
+</script>
+<h2>Add Staff</h2>
+
+<h3>@ViewBag.Message</h3>
+
+<span id="spnNoMatchError" style="color: red"></span>
+
+@using (Html.BeginForm("AddStaff", "Staff", FormMethod.Post, new { id = "frmAddStaff", onsubmit = "return verifyPasswordsMatch()" }))
+{
+    <div class="form">
+        <p>
+            @Html.LabelFor(s => s.Email)
+            @Html.TextBoxFor(s => s.Email, new { id = "txtStaffEmail", placeholder = "New staff email...", type = "email" })
+            @Html.LabelFor(s => s.Password)<br />
+            @Html.TextBoxFor(s => s.Password, new { id = "txtStaffPass1", type = "password" })<br />
+            @Html.Label("Confirm Password")<br />
+            @Html.TextBox("txtStaffPass2", null, new { type = "password" })<br />
+        </p>
+        <input type="submit" value="Add New Staff" />
+    </div>
+}

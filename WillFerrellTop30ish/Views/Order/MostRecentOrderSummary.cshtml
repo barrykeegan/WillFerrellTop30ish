@@ -1,0 +1,43 @@
+﻿@model WillFerrellTop30ish.Models.Order
+@{
+    ViewBag.Title = "MostRecentOrderSummary";
+}
+
+<h2>Your Order Summary</h2>
+
+@Model.OrderID @Model.CustomerEmail, @Model.OrderDate
+<br />
+<table>
+    <thead>
+        <tr>
+            <th>Movie Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Line Total</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            var total = 0.0;
+            foreach (var item in Model.OrderItems)
+            {
+                var linePrice = 0.0;
+                linePrice = (double)item.Price * (double)item.Quantity;
+                total = total + linePrice;
+                <tr>
+                    <td>@item.ItemOrdered.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Price</td>
+                    <td>@linePrice</td>
+                </tr>
+            }
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <th>Order Total:</th>
+            <td>@total</td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<WillFerrellTop30ish.Models.Order>
+@{
+    ViewBag.Title = "CustomerOrders";
+}
+@if (Session == null || Session["userType"] == null || Session["userType"].ToString() != "customer")
+{
+    Response.Redirect(Url.Action("SignIn", "Customer"));
+}
+
+<h2>List of Your Orders</h2>
+
+@if (Model == null)
+{
+    <h3>You have no orders yet. Go @Html.ActionLink("here", "Index", "Movies") to shop!</h3>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+            </tr>
+        </thead>
+        <tbody>
+
+
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@Html.ActionLink(order.OrderID.ToString(), "CustomerOrder", new { ID = order.OrderID })</td>
+                    <td>@Html.ActionLink(order.OrderDate.ToString(), "CustomerOrder", new { ID = order.OrderID })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
