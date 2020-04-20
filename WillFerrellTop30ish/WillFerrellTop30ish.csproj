@@ -147,6 +147,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\imgs\aboutus1.jpg" />
+    <Content Include="Content\imgs\aboutus2.jpg" />
+    <Content Include="Content\imgs\anchor.jpg" />
+    <Content Include="Content\imgs\blades2.jpg" />
+    <Content Include="Content\imgs\burgundy-banner.png" />
+    <Content Include="Content\imgs\frank.jpg" />
+    <Content Include="Content\imgs\mugatu.jpg" />
+    <Content Include="Content\imgs\Ricky-Bobby.jpg" />
+    <Content Include="Content\imgs\semipro.jpg" />
+    <Content Include="Content\imgs\stepbros.jpg" />
+    <Content Include="Content\imgs\will1.jpg" />
+    <Content Include="Content\imgs\will2.jpg" />
+    <Content Include="Content\imgs\will3.jpg" />
+    <Content Include="Content\imgs\willtyping.jpg" />
     <Content Include="Content\Styles.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -157,6 +171,7 @@
     <None Include="MvcSiteMapSchema.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\WillFerrellTop30ish - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -221,7 +236,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\imgs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
