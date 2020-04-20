@@ -91,13 +91,19 @@ namespace WillFerrellTop30ish.Controllers
         {
             Order summarisedOrder = new Order();
             int orderID = id;
-            summarisedOrder = dao.GetOrder(orderID);
-            foreach (OrderItem oi in summarisedOrder.OrderItems)
+            if (Session != null && Session["userType"] != null && Session["userType"].ToString() == "customer")
             {
-                oi.ItemOrdered = dao.ShowOneMovie(oi.ItemOrdered.ID);
+                summarisedOrder = dao.GetOrder(orderID);
+                if (Session != null && Session["email"] != null && Session["email"].ToString() == summarisedOrder.CustomerEmail)
+                {
+                    foreach (OrderItem oi in summarisedOrder.OrderItems)
+                    {
+                        oi.ItemOrdered = dao.ShowOneMovie(oi.ItemOrdered.ID);
+                    }
+                    return View(summarisedOrder);
+                }
             }
-
-            return View(summarisedOrder);
+            return RedirectToAction("Index", "Customer");
         }
 
         public ActionResult AdministratorOrders()
