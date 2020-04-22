@@ -194,12 +194,12 @@ namespace WillFerrellTop30ish.Models
         public int UpdateCustomer(Customer customer)
         {
             int count = 0;
-            //string password;
             SqlCommand cmd = new SqlCommand("uspUpdateCustomer", con);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@custName", customer.Name);
             cmd.Parameters.AddWithValue("@custEmail", customer.Email);
             cmd.Parameters.AddWithValue("@Phone", customer.Phone);
+            //password is hashed before this method is called
             cmd.Parameters.AddWithValue("@pass", customer.Password);
             cmd.Parameters.AddWithValue("@addressLine1", customer.AddressLine1);
             cmd.Parameters.AddWithValue("@addressLine2", customer.AddressLine2);
